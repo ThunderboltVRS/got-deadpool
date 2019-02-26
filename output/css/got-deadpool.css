@@ -1,0 +1,62 @@
+.character-pic{
+    height: 100%;
+    width: 100%;
+}
+
+.character-pic-container{
+    width: 130px;
+    height: 150px;
+    padding: 10px
+}
+
+.level{
+    height: 100%;
+}
+
+.box{
+    background-color: rgb(256,256,256,0.9)
+}
+
+.gotBody{
+    min-height: 100%;
+}
+
+.titleContainer{
+    background-color: rgb(215, 203, 171);
+}
+
+.media-left .image img{
+    height: -webkit-fill-available;
+}
+
+html{
+    min-height: 100%;
+    min-height: 100%;
+    background: url(../img/background-min.jpg) no-repeat center center fixed; 
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+}
+
+.tabs{
+    background: lightgray;
+    border-color: lightgray;
+}
+
+.stat-row{
+    /* padding-top: 2rem; */
+}
+
+.gotBody .tabs.is-toggle li.is-active a{
+    background-color: grey;
+    border-color: grey;
+}
+
+.gotBody .hero.is-link{
+    background-color: grey;
+}
+
+.gotBody .section{
+    padding: 1rem 1rem 4rem 1rem;
+}

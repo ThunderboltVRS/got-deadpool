@@ -1,0 +1,5 @@
+elm-stuff/
+.vscode/settings.json
+backup/
+output/js/got-deadpool-1.0.0.min.js
+output/js/got-deadpool-1.0.0.js
