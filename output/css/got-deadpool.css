@@ -62,7 +62,9 @@ html{
 }
 
 .gotBody .table tr.is-selected{
-    background-color: darkgray;
+    background-color: inherit;
+    color: inherit;
+    font-weight: bold
 }
 
 .gotBody .media-content{
@@ -70,5 +72,14 @@ html{
 }
 
 .gotBody .card{
-    min-height: 14rem;
+    /* min-height: 14rem; */
+}
+
+.sign-in{
+    padding-top: 5rem;
+}
+
+.character-pic{
+    width: 8rem;
+    height: 11rem;
 }

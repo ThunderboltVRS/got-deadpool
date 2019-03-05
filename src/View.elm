@@ -267,7 +267,7 @@ characterCard model character prediction =
             [ div [ class "card-content" ]
                 [ div [ class "media" ]
                     [ figure [ class "media-left" ]
-                        [ img [ class "image", style "width" "7rem", src character.pictureUrl ]
+                        [ img [ class "image character-pic", src character.pictureUrl ]
                             []
                         ]
                     , div [ class "media-content" ]
