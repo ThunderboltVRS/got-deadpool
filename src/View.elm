@@ -50,7 +50,7 @@ tabs model =
             , li [ class (tabClass model TabMyStats) ]
                 [ a [ onClick (TabSelected TabMyStats) ]
                     [ span []
-                        [ text "Stats" ]
+                        [ text "Scores" ]
                     ]
                 ]
             , li [ class (tabClass model TabInfo) ]
@@ -74,11 +74,12 @@ statsView model =
                     ]
                 ]
             ]
-        , div
-            [ class "columns is-multiline is-centered is-vcentered stat-row" ]
-            [ yourScoreCard model
-            , diedSoFarCard model
-            ]
+
+        -- , div
+        --     [ class "columns is-multiline is-centered is-vcentered stat-row" ]
+        --     [ yourScoreCard model
+        --     , diedSoFarCard model
+        --     ]
         , div
             [ class "columns is-multiline is-centered is-vcentered stat-row" ]
             [ predictionDeathChart model
@@ -102,7 +103,7 @@ userScoresTable model =
             (model.userScores
                 |> List.map
                     (\userScore ->
-                        tr []
+                        tr [ classList [ ( "is-selected", model.uid == userScore.uid ) ] ]
                             [ td [ style "width" "50%" ] [ Html.text userScore.displayName ]
                             , td [ style "width" "50%" ] [ Html.text (String.fromInt userScore.score) ]
                             ]
@@ -139,7 +140,7 @@ predictionDeathChart model =
     div [ class "column is-half" ]
         [ div [ class "box" ]
             [ h1 [ class "title" ]
-                [ text "You Predicted" ]
+                [ text "Deaths Per Episode (You Predicted)" ]
             , predictedDeathChart model
             ]
         ]
@@ -174,7 +175,7 @@ actualDeathChart model =
     div [ class "column is-half" ]
         [ div [ class "box" ]
             [ h1 [ class "title" ]
-                [ text "Actual" ]
+                [ text "Deaths Per Episode (Actual)" ]
             , aDeathChart model
             ]
         ]
@@ -184,6 +185,36 @@ infoView : Model -> Html Msg
 infoView model =
     div []
         [ div [ class "column is-full" ]
+            [ div [ class "box" ]
+                [ h1 [ class "title" ]
+                    [ text "How It Works" ]
+                , p []
+                    [ ol [ style "padding" "1.25rem" ]
+                        [ li []
+                            [ text "Use the predictions tab to make your predictions per character. Changes are immediately saved." ]
+                        , li []
+                            [ text "At some point close to the first episode, you will no longer be able to make predictions." ]
+                        , li []
+                            [ text "On a Monday after each episode is aired, the status of the character will be input." ]
+                        , li []
+                            [ text "Scores will be calculated:"
+                            , ul []
+                                [ li []
+                                    [ text "A point for correctly guessing if they live or die."
+                                    ]
+                                , li []
+                                    [ text "A bonus point for guessing the correct episode of death."
+                                    ]
+                                ]
+                            ]
+                        , li []
+                            [ text "Everyone's score is displayed in a ranked table on the scores tab."
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        , div [ class "column is-full" ]
             [ div [ class "box" ]
                 [ h1 [ class "title" ]
                     [ text "The Rules" ]
@@ -206,30 +237,13 @@ infoView model =
         , div [ class "column is-full" ]
             [ div [ class "box" ]
                 [ h1 [ class "title" ]
-                    [ text "How It Works" ]
-                , p []
-                    [ ol [ style "padding" "1.25rem" ]
-                        [ li []
-                            [ text "Use the predictions tab to make your predictions per character" ]
-                        , li []
-                            [ text "At some point close to the first episode, you will no longer be able to make predictions" ]
-                        , li []
-                            [ text "On a Monday after each episode is aired, the status of the character will be input" ]
-                        , li []
-                            [ text "You can then see your progress and score as the episodes progress" ]
-                        ]
-                    ]
-                ]
-            ]
-        , div [ class "column is-full" ]
-            [ div [ class "box" ]
-                [ h1 [ class "title" ]
                     [ text "Author" ]
                 , p []
                     [ div []
                         [ text "Created by Gary Stanton. Written entirely in Elm, using Firestore database to store predictions and outcomes. Full source code on Github. "
                         ]
-                    , a [ class "button is-medium", href "https://github.com/ThunderboltVRS/force-pong" ]
+                    , br [] []
+                    , a [ class "button is-medium", href "https://github.com/ThunderboltVRS/got-deadpool" ]
                         [ span [ class "icon" ]
                             [ i [ class "fab fa-github" ]
                                 []
@@ -237,11 +251,13 @@ infoView model =
                         , span []
                             [ text "GitHub" ]
                         ]
+                    , br [] []
+                    , br [] []
+                    , div [] [ text "Background image by by mauRÍCIO santos: ", a [ href "https://unsplash.com/photos/N1gFsYf9AI0" ] [ text "link" ] ]
                     ]
                 ]
             ]
         ]
-
 
 
 characterCard : Model -> Character -> Prediction -> Html Msg
@@ -251,21 +267,41 @@ characterCard model character prediction =
             [ div [ class "card-content" ]
                 [ div [ class "media" ]
                     [ figure [ class "media-left" ]
-                        [ p [ class "image character-pic-container" ]
-                            [ img [ src character.pictureUrl ]
-                                []
-                            ]
+                        [ img [ class "image", style "width" "7rem", src character.pictureUrl ]
+                            []
                         ]
                     , div [ class "media-content" ]
                         [ p [ class "title is-4" ]
                             [ text character.name ]
                         , aliveStatusSelection model character prediction
+                        , br [] []
+                        , br [] []
                         , episodeSelection model character prediction
+                        ]
+                    , div [ class "media-right" ]
+                        [ span [ class "icon is-large" ]
+                            [ i [ class (characterIconClass character) ]
+                                []
+                            ]
                         ]
                     ]
                 ]
             ]
         ]
+
+
+characterIconClass : Character -> String
+characterIconClass character =
+    case character.aliveStatus of
+        Lives ->
+            if character.locked && not character.confirmed then
+                "fas fa-2x fa-lock"
+
+            else
+                ""
+
+        Dies ->
+            "fas fa-2x fa-skull-crossbones"
 
 
 aliveStatusSelection : Model -> Character -> Prediction -> Html Msg
@@ -330,23 +366,6 @@ episodeSelectionOption episode prediction =
         , disabled (prediction.aliveStatus == Lives && not (episode == Six))
         ]
         [ text (episodeToString episode) ]
-
-
-
--- saveFooter : Model -> Html Msg
--- saveFooter model =
---     nav [ class "navbar is-fixed-bottom" ]
---         [ div [ class "navbar-end" ]
---             [ div [ class "navbar-item" ]
---                 [ div [ class "buttons" ]
---                     [ a [ class "button is-link is-large" ]
---                         [ strong []
---                             [ text "Save" ]
---                         ]
---                     ]
---                 ]
---             ]
---         ]
 
 
 statusPredictionMatches : AliveStatus -> Prediction -> Bool
