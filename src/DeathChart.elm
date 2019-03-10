@@ -73,9 +73,9 @@ view : List ( String, Float ) -> Svg msg
 view model =
     svg [ viewBox 0 0 w h ]
         [ style [] [ text """
-            .column rect { fill: rgb(215, 203, 171); }
+            .column rect { fill: #2366d1; }
             g .column:hover text { display: inline; }
-            rect:hover {fill: burlywood}
+            rect:hover {fill: #209cee}
             g .column text { display: none; }
             
           """ ]

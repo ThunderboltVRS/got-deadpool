@@ -41,7 +41,13 @@ tabs : Model -> Html Msg
 tabs model =
     div [ class "tabs is-toggle is-fullwidth is-medium is-centered" ]
         [ ul []
-            [ li [ class (tabClass model TabMyPredictions) ]
+            [ li [ class (tabClass model TabInfo) ]
+                [ a [ onClick (TabSelected TabInfo) ]
+                    [ span []
+                        [ text "Home" ]
+                    ]
+                ]
+            , li [ class (tabClass model TabMyPredictions) ]
                 [ a [ onClick (TabSelected TabMyPredictions) ]
                     [ span []
                         [ text "Predictions" ]
@@ -51,12 +57,6 @@ tabs model =
                 [ a [ onClick (TabSelected TabMyStats) ]
                     [ span []
                         [ text "Scores" ]
-                    ]
-                ]
-            , li [ class (tabClass model TabInfo) ]
-                [ a [ onClick (TabSelected TabInfo) ]
-                    [ span []
-                        [ text "Info" ]
                     ]
                 ]
             ]
@@ -187,6 +187,13 @@ infoView model =
         [ div [ class "column is-full" ]
             [ div [ class "box" ]
                 [ h1 [ class "title" ]
+                    [ text "Winter is coming..." ]
+                , p [] [ text "Game of Thrones Deadpool. Predict the fate of all the major characters for the final season." ]
+                ]
+            ]
+        , div [ class "column is-full" ]
+            [ div [ class "box" ]
+                [ h1 [ class "title" ]
                     [ text "How It Works" ]
                 , p []
                     [ ol [ style "padding" "1.25rem" ]
@@ -240,10 +247,10 @@ infoView model =
                     [ text "Author" ]
                 , p []
                     [ div []
-                        [ text "Created by Gary Stanton. Written entirely in Elm, using Firestore database to store predictions and outcomes. Full source code on Github. "
+                        [ text "Created by Gary Stanton. Written in Elm, using Firestore database to store predictions and cloud functions to compute scores. Full source code on Github. "
                         ]
                     , br [] []
-                    , a [ class "button is-medium", href "https://github.com/ThunderboltVRS/got-deadpool" ]
+                    , a [ class "button is-medium is-link", href "https://github.com/ThunderboltVRS/got-deadpool" ]
                         [ span [ class "icon" ]
                             [ i [ class "fab fa-github" ]
                                 []
@@ -254,6 +261,7 @@ infoView model =
                     , br [] []
                     , br [] []
                     , div [] [ text "Background image by by mauRÍCIO santos: ", a [ href "https://unsplash.com/photos/N1gFsYf9AI0" ] [ text "link" ] ]
+                    , div [] [ text "Title image by Xeworlebi: ", a [ href "https://de.wikipedia.org/wiki/Datei:Game_of_Thrones_2011_logo.svg" ] [ text "link" ] ]
                     ]
                 ]
             ]
@@ -276,7 +284,11 @@ characterCard model character prediction =
                         , aliveStatusSelection model character prediction
                         , br [] []
                         , br [] []
-                        , episodeSelection model character prediction
+                        , if prediction.aliveStatus == Dies then
+                            episodeSelection model character prediction
+
+                          else
+                            div [] []
                         ]
                     , div [ class "media-right" ]
                         [ span [ class "icon is-large" ]

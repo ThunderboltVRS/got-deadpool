@@ -25,7 +25,7 @@ update msg model =
             ( updatedModel, saveUserData (encodeUserData model.uid model.displayName updatedModel.predictions) )
 
         LoadCharacters characters ->
-            ( { model | characters = characters, predictions = defaultPredictions characters }
+            ( { model | characters = characters, predictions = if List.isEmpty model.predictions then defaultPredictions characters else model.predictions }
                 |> calculateScores
             , Cmd.none
             )

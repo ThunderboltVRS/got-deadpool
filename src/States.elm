@@ -19,7 +19,7 @@ initialModel flags =
     , characters = []
     , currentEpisode = None
     , predictionScores = []
-    , selectedTab = TabMyPredictions
+    , selectedTab = TabInfo
     , userScores = []
     }
 
