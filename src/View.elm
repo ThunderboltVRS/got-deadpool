@@ -6,6 +6,7 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (on, onClick)
 import Html.Events.Extra exposing (..)
 import Json.Decode as Json
+import List.Extra
 import Types exposing (..)
 import Util exposing (..)
 
@@ -25,9 +26,7 @@ tabContent model =
         [ class "section main-background" ]
         [ case model.selectedTab of
             TabMyPredictions ->
-                div
-                    [ class "columns is-multiline is-centered is-vcentered" ]
-                    (List.map (characterDetails model) model.characters)
+                characterTab model
 
             TabMyStats ->
                 statsView model
@@ -121,6 +120,25 @@ tabClass model tabType =
         ""
 
 
+characterTab : Model -> Html Msg
+characterTab model =
+    div []
+        (List.Extra.greedyGroupsOf 3 model.characters
+            |> List.map (characterRow model)
+        )
+
+
+characterRow : Model -> List Character -> Html Msg
+characterRow model characterSubList =
+    div
+        [ class "columns is-centered is-vcentered" ]
+        (List.map (characterDetails model) characterSubList)
+        -- ([ div [ class "column" ] [] ]
+        --     |> List.append (List.map (characterDetails model) characterSubList)
+        --     |> List.append [ div [ class "column" ] [] ]
+        -- )
+
+
 characterDetails : Model -> Character -> Html Msg
 characterDetails model character =
     let
@@ -186,8 +204,7 @@ infoView model =
     div []
         [ div [ class "column is-full" ]
             [ div [ class "box" ]
-                [ h1 [ class "title" ]
-                    [ text "Winter is coming..." ]
+                [ img [ src "img/game-of-thrones-1.svg", style "margin-bottom" "1.5rem" ] []
                 , p [] [ text "Game of Thrones Deadpool. Predict the fate of all the major characters for the final season." ]
                 ]
             ]
@@ -246,8 +263,11 @@ infoView model =
                 [ h1 [ class "title" ]
                     [ text "Author" ]
                 , p []
-                    [ div []
-                        [ text "Created by Gary Stanton. Written in Elm, using Firestore database to store predictions and cloud functions to compute scores. Full source code on Github. "
+                    [ p []
+                        [ text "Created by Gary Stanton."
+                        ]
+                    , p []
+                        [ text "Written in Elm, using Firestore database to store predictions and cloud functions to compute scores."
                         ]
                     , br [] []
                     , a [ class "button is-medium is-link", href "https://github.com/ThunderboltVRS/got-deadpool" ]
@@ -270,7 +290,7 @@ infoView model =
 
 characterCard : Model -> Character -> Prediction -> Html Msg
 characterCard model character prediction =
-    div [ class "column is-narrow" ]
+    div [ class "column" ]
         [ div [ class "card" ]
             [ div [ class "card-content" ]
                 [ div [ class "media" ]
@@ -290,12 +310,13 @@ characterCard model character prediction =
                           else
                             div [] []
                         ]
-                    , div [ class "media-right" ]
-                        [ span [ class "icon is-large" ]
-                            [ i [ class (characterIconClass character) ]
-                                []
-                            ]
-                        ]
+
+                    -- , div [ class "media-right" ]
+                    --     [ span [ class "icon is-large" ]
+                    --         [ i [ class (characterIconClass character) ]
+                    --             []
+                    --         ]
+                    --     ]
                     ]
                 ]
             ]

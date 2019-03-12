@@ -36,7 +36,7 @@ update msg model =
             )
 
         LoadUserScores scores ->
-            ( { model | userScores = scores } , Cmd.none )
+            ( { model | userScores = List.reverse (List.sortBy .score scores) } , Cmd.none )
 
         TabSelected tab ->
             ( { model | selectedTab = tab }
