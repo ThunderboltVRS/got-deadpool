@@ -64,9 +64,9 @@ tabs model =
 
 statsView : Model -> Html Msg
 statsView model =
-    div []
+    div [ class "container"]
         [ div [ class "columns is-multiline is-centered is-vcentered stat-row" ]
-            [ div [ class "column" ]
+            [ div [ class "column is-two-thirds" ]
                 [ div [ class "box" ]
                     [ h1 [ class "title" ] [ text "Scores" ]
                     , userScoresTable model
@@ -122,21 +122,19 @@ tabClass model tabType =
 
 characterTab : Model -> Html Msg
 characterTab model =
-    div []
-        (List.Extra.greedyGroupsOf 3 model.characters
-            |> List.map (characterRow model)
-        )
+    div [class "container"]
+        -- (List.Extra.greedyGroupsOf 3 model.characters
+        --     |> List.map (characterRow model)
+        -- )
+        [characterRow model model.characters]
 
 
 characterRow : Model -> List Character -> Html Msg
 characterRow model characterSubList =
     div
-        [ class "columns is-centered is-vcentered" ]
+        --[ class "columns is-centered is-vcentered" ]
+        [ class "columns is-centered is-vcentered is-multiline" ]
         (List.map (characterDetails model) characterSubList)
-        -- ([ div [ class "column" ] [] ]
-        --     |> List.append (List.map (characterDetails model) characterSubList)
-        --     |> List.append [ div [ class "column" ] [] ]
-        -- )
 
 
 characterDetails : Model -> Character -> Html Msg
@@ -155,7 +153,7 @@ characterDetails model character =
 
 predictionDeathChart : Model -> Html Msg
 predictionDeathChart model =
-    div [ class "column is-half" ]
+    div [ class "column is-two-thirds" ]
         [ div [ class "box" ]
             [ h1 [ class "title" ]
                 [ text "Deaths Per Episode (You Predicted)" ]
@@ -190,7 +188,7 @@ diedSoFarCard model =
 
 actualDeathChart : Model -> Html Msg
 actualDeathChart model =
-    div [ class "column is-half" ]
+    div [ class "column is-two-thirds" ]
         [ div [ class "box" ]
             [ h1 [ class "title" ]
                 [ text "Deaths Per Episode (Actual)" ]
@@ -204,16 +202,14 @@ infoView model =
     div []
         [ div [ class "column is-full" ]
             [ div [ class "box" ]
-                [ img [ src "img/game-of-thrones-1.svg", style "margin-bottom" "1.5rem" ] []
-                , p [] [ text "Game of Thrones Deadpool. Predict the fate of all the major characters for the final season." ]
-                ]
-            ]
-        , div [ class "column is-full" ]
-            [ div [ class "box" ]
-                [ h1 [ class "title" ]
+                [ 
+                    h1 [class "title is-1"] [text "Welcome to GoT Deadpool"]
+                    , p [] [ text "Winter is coming... will they survive it. Predict the fate of all the major characters for the final season." ]
+                    , br [] []
+                    , h1 [ class "subtitle" ]
                     [ text "How It Works" ]
                 , p []
-                    [ ol [ style "padding" "1.25rem" ]
+                    [ ol [ ]
                         [ li []
                             [ text "Use the predictions tab to make your predictions per character. Changes are immediately saved." ]
                         , li []
@@ -243,7 +239,7 @@ infoView model =
                 [ h1 [ class "title" ]
                     [ text "The Rules" ]
                 , p []
-                    [ ol [ style "padding" "1.25rem" ]
+                    [ ol [ ]
                         [ li []
                             [ text "Resuurections will not revert a character's status of 'Dies'" ]
                         , li []
@@ -252,6 +248,8 @@ infoView model =
                             [ text "Any presumed death offscreen will be counted as a death" ]
                         , li []
                             [ text "A death between episodes will count as a death on the latter episode" ]
+                        , li []
+                            [ text "The Night King's death is the point which he ceases to be a Walker" ]
                         , li []
                             [ text "My word is final." ]
                         ]
@@ -281,7 +279,6 @@ infoView model =
                     , br [] []
                     , br [] []
                     , div [] [ text "Background image by by mauRÍCIO santos: ", a [ href "https://unsplash.com/photos/N1gFsYf9AI0" ] [ text "link" ] ]
-                    , div [] [ text "Title image by Xeworlebi: ", a [ href "https://de.wikipedia.org/wiki/Datei:Game_of_Thrones_2011_logo.svg" ] [ text "link" ] ]
                     ]
                 ]
             ]
@@ -290,7 +287,7 @@ infoView model =
 
 characterCard : Model -> Character -> Prediction -> Html Msg
 characterCard model character prediction =
-    div [ class "column" ]
+    div [ class "column is-full-mobile is-full-tablet is-half-desktop is-half-widescreen is-half-fullhd" ]
         [ div [ class "card" ]
             [ div [ class "card-content" ]
                 [ div [ class "media" ]
@@ -300,7 +297,11 @@ characterCard model character prediction =
                         ]
                     , div [ class "media-content" ]
                         [ p [ class "title is-4" ]
-                            [ text character.name ]
+                            [ text character.name,
+                            span [ class "icon character-icon" ]
+            [ i [ class (characterIconClass character)]
+                []
+            ] ]
                         , aliveStatusSelection model character prediction
                         , br [] []
                         , br [] []
@@ -328,13 +329,13 @@ characterIconClass character =
     case character.aliveStatus of
         Lives ->
             if character.locked && not character.confirmed then
-                "fas fa-2x fa-lock"
+                "fas fa-lock"
 
             else
                 ""
 
         Dies ->
-            "fas fa-2x fa-skull-crossbones"
+            "fas fa-skull-crossbones"
 
 
 aliveStatusSelection : Model -> Character -> Prediction -> Html Msg

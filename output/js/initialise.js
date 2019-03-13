@@ -117,12 +117,15 @@ initApp = function () {
         // }, null, '  ');
         initialiseApp(accessToken, user.uid, displayName);
         
-        getCharacters();
+        //getCharacters(); // loaded on subscription
+        //getUserScores(); // loaded on subscription
         getUserData();
-        subscribeToLoadCharacters();
         subscribeToSaveUserData();
+
+        subscribeToLoadCharacters();
         subscribeToLoadUserScores();
-        getUserScores();
+
+        
       });
     } else {
       // User is signed out.

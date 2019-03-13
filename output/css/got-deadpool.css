@@ -75,8 +75,8 @@ html {
 }
 
 .gotBody .card-content {
-    overscroll-behavior-x: auto;
-    overflow: auto;
+    /* overscroll-behavior-x: auto;
+    overflow: auto; */
 }
 
 .sign-in {
@@ -84,6 +84,18 @@ html {
 }
 
 .character-pic {
-    width: 8rem;
+    width: 9rem;
     height: 11rem;
+}
+
+ol{
+    padding: 0rem 1.25rem 1.25rem 1.25rem;
+}
+
+ol li{
+    padding-bottom: 0.5rem;
+}
+
+.character-icon{
+    float: right;
 }
