@@ -64,7 +64,7 @@ tabs model =
 
 statsView : Model -> Html Msg
 statsView model =
-    div [ class "container"]
+    div [ class "container" ]
         [ div [ class "columns is-multiline is-centered is-vcentered stat-row" ]
             [ div [ class "column is-two-thirds" ]
                 [ div [ class "box" ]
@@ -122,11 +122,11 @@ tabClass model tabType =
 
 characterTab : Model -> Html Msg
 characterTab model =
-    div [class "container"]
+    div [ class "container" ]
         -- (List.Extra.greedyGroupsOf 3 model.characters
         --     |> List.map (characterRow model)
         -- )
-        [characterRow model model.characters]
+        [ characterRow model model.characters ]
 
 
 characterRow : Model -> List Character -> Html Msg
@@ -202,20 +202,23 @@ infoView model =
     div []
         [ div [ class "column is-full" ]
             [ div [ class "box" ]
-                [ 
-                    h1 [class "title is-1"] [text "Welcome to GoT Deadpool"]
-                    , p [] [ text "Winter is coming... will they survive it. Predict the fate of all the major characters for the final season." ]
-                    , br [] []
-                    , h1 [ class "subtitle" ]
-                    [ text "How It Works" ]
+                [ h1 [ class "title is-1" ] [ text "Welcome to GoT Deadpool" ]
+                , p [] [ text "Winter is coming... will they survive it. Predict the fate of all the major characters for the final season." ]
+                , br [] []
+                ]
+            ]
+        , div [ class "column is-full" ]
+            [ div [ class "box" ]
+                [ h1 [ class "title" ]
+                    [ text "How To Play" ]
                 , p []
-                    [ ol [ ]
+                    [ ol []
                         [ li []
                             [ text "Use the predictions tab to make your predictions per character. Changes are immediately saved." ]
                         , li []
                             [ text "At some point close to the first episode, you will no longer be able to make predictions." ]
                         , li []
-                            [ text "On a Monday after each episode is aired, the status of the character will be input." ]
+                            [ text "On a Monday after each episode is aired, the status of the character will updated." ]
                         , li []
                             [ text "Scores will be calculated:"
                             , ul []
@@ -239,7 +242,7 @@ infoView model =
                 [ h1 [ class "title" ]
                     [ text "The Rules" ]
                 , p []
-                    [ ol [ ]
+                    [ ol []
                         [ li []
                             [ text "Resuurections will not revert a character's status of 'Dies'" ]
                         , li []
@@ -287,7 +290,7 @@ infoView model =
 
 characterCard : Model -> Character -> Prediction -> Html Msg
 characterCard model character prediction =
-    div [ class "column is-full-mobile is-full-tablet is-half-desktop is-half-widescreen is-half-fullhd" ]
+    div [ class "column is-full-mobile is-full-tablet is-half-desktop is-half-widescreen is-one-third-fullhd" ]
         [ div [ class "card" ]
             [ div [ class "card-content" ]
                 [ div [ class "media" ]
@@ -297,11 +300,12 @@ characterCard model character prediction =
                         ]
                     , div [ class "media-content" ]
                         [ p [ class "title is-4" ]
-                            [ text character.name,
-                            span [ class "icon character-icon" ]
-            [ i [ class (characterIconClass character)]
-                []
-            ] ]
+                            [ text character.name
+                            , span [ class "icon character-icon" ]
+                                [ i [ class (characterIconClass character) ]
+                                    []
+                                ]
+                            ]
                         , aliveStatusSelection model character prediction
                         , br [] []
                         , br [] []
