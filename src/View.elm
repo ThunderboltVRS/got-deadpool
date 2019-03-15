@@ -244,7 +244,7 @@ infoView model =
                 , p []
                     [ ol []
                         [ li []
-                            [ text "Resuurections will not revert a character's status of 'Dies'" ]
+                            [ text "Resurections will not revert a character's status of 'Dies'" ]
                         , li []
                             [ text "Conversion to a White Walker will count as a death" ]
                         , li []
