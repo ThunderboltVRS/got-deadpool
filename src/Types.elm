@@ -13,6 +13,8 @@ type Msg
     | LoadUserData UserData
     | TabSelected TabType
     | Error Decode.Error
+    | SearchUsers String
+    | LogOut String
 
 
 type AliveStatus
@@ -46,6 +48,7 @@ type alias Model =
     , predictionScores : List PredictionScore
     , selectedTab : TabType
     , userScores : List UserScore
+    , userSearchText : String
     }
 
 

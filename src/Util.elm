@@ -1,5 +1,6 @@
-module Util exposing (aliveStatusToString, episodeToString, stringToEpisode, stringToState)
+module Util exposing (aliveStatusToString, episodeToString, match, stringToEpisode, stringToState)
 
+import Regex
 import Tuple
 import Types exposing (..)
 
@@ -78,3 +79,12 @@ episodeToString episode =
 
         Six ->
             "Episode Six"
+
+
+match : String -> String -> Bool
+match conatined inside =
+    let
+        regex =
+            Maybe.withDefault Regex.never <| Regex.fromStringWith { caseInsensitive = True, multiline = False } conatined
+    in
+    Regex.contains regex inside

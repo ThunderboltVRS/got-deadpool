@@ -1,4 +1,4 @@
-port module Ports exposing (..)
+port module Ports exposing (aliveDecoder, aliveStatusEncoder, characterDecoder, decodeCharacters, decodeCharactersAndCreateMsg, decodeUserData, decodeUserDataAndCreateMsg, decodeUserScores, decodeUserScoresAndCreateMsg, encodePrediction, encodeUserData, episdoeDecoder, episodeEncoder, loadCharacters, loadUserData, loadUserScores, logOut, predictionDecoder, saveUserData, userDataEncoder, userScoreDecoder)
 
 import Json.Decode as Decode exposing (Decoder)
 import Json.Decode.Pipeline exposing (optional, required)
@@ -17,7 +17,13 @@ port loadUserScores : (Decode.Value -> msg) -> Sub msg
 
 port saveUserData : Encode.Value -> Cmd a
 
+
+port logOut : String -> Cmd a
+
+
+
 -- LoadUserScores
+
 
 decodeUserScoresAndCreateMsg : Decode.Value -> Msg
 decodeUserScoresAndCreateMsg jsonValue =
@@ -45,6 +51,8 @@ userScoreDecoder =
         |> required "uid" Decode.string
         |> required "displayName" Decode.string
         |> required "score" Decode.int
+
+
 
 -- Characters
 
@@ -125,7 +133,7 @@ encodeUserData : String -> String -> List Prediction -> Encode.Value
 encodeUserData uid displayName predictions =
     Encode.object
         [ ( "uid", Encode.string uid )
-            ,( "predictions", Encode.list encodePrediction predictions )
+        , ( "predictions", Encode.list encodePrediction predictions )
         , ( "displayName", Encode.string displayName )
         ]
 

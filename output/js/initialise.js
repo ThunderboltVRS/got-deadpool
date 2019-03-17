@@ -11,6 +11,19 @@ function initialiseApp(authToken, uid, displayName) {
   });
 }
 
+function subscribeToLogOut() {
+  app.ports.logOut.subscribe(function (data) {
+    firebase.auth().signOut()
+    .then(function() {
+      // Sign-out successful.
+      window.location.href = "index.html";
+    })
+    .catch(function(error) {
+      alert("Unable to log you out, please close down your browser and try again")
+    });
+  });
+}
+
 function subscribeToSaveUserData() {
   app.ports.saveUserData.subscribe(function (data) {
     saveUserData(JSON.stringify(data));
@@ -120,6 +133,7 @@ initApp = function () {
         //getCharacters(); // loaded on subscription
         //getUserScores(); // loaded on subscription
         getUserData();
+        subscribeToLogOut();
         subscribeToSaveUserData();
 
         subscribeToLoadCharacters();

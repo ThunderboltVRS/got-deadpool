@@ -21,6 +21,7 @@ initialModel flags =
     , predictionScores = []
     , selectedTab = TabInfo
     , userScores = []
+    , userSearchText = ""
     }
 
 

@@ -30,6 +30,9 @@
         min-height: 100%;
         max-width: 100vw;
     }
+    .gotBody .navbar{
+        display: inherit;
+    }
 }
 
 html {
@@ -80,7 +83,7 @@ html {
 }
 
 .sign-in {
-    padding-top: 5rem;
+    padding-top: 3rem;
 }
 
 .character-pic {

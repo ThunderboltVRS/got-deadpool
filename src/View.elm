@@ -11,11 +11,12 @@ import Types exposing (..)
 import Util exposing (..)
 
 
+
 view : Model -> Html Msg
 view model =
     div
         [ style "height" "100%" ]
-        [ tabs model
+        [ div[class "navbar is-fixed-top"][tabs model]
         , tabContent model
         ]
 
@@ -32,7 +33,7 @@ tabContent model =
                 statsView model
 
             TabInfo ->
-                div [ class "columns is-multiline is-centered is-vcentered" ] [ infoView model ]
+                 infoView model
         ]
 
 
@@ -69,6 +70,7 @@ statsView model =
             [ div [ class "column is-two-thirds" ]
                 [ div [ class "box" ]
                     [ h1 [ class "title" ] [ text "Scores" ]
+                    , userSearch model
                     , userScoresTable model
                     ]
                 ]
@@ -87,6 +89,19 @@ statsView model =
         ]
 
 
+userSearch : Model -> Html Msg
+userSearch model =
+    div [ class "field is-horizontal has-addons" ]
+        [ div [ class "control has-icons-left is-expanded" ]
+            [ input [ class "input is-medium is-rounded", placeholder "Search Users", type_ "search", Html.Events.onInput SearchUsers ]
+                []
+            , span [ class "icon is-medium is-left" ]
+                [ i [ class "fas fa-search" ]
+                    []
+                ]
+            ]
+        ]
+
 userScoresTable : Model -> Html Msg
 userScoresTable model =
     table [ class "table is-striped is-narrow is-hoverable is-fullwidth" ]
@@ -99,7 +114,7 @@ userScoresTable model =
                 ]
             ]
         , tbody []
-            (model.userScores
+            (filteredUsers model
                 |> List.map
                     (\userScore ->
                         tr [ classList [ ( "is-selected", model.uid == userScore.uid ) ] ]
@@ -109,6 +124,14 @@ userScoresTable model =
                     )
             )
         ]
+
+
+filteredUsers : Model -> List UserScore
+filteredUsers model =
+    if (String.isEmpty model.userSearchText) then
+        model.userScores
+    else
+        List.filter (\u -> match model.userSearchText u.displayName) model.userScores
 
 
 tabClass : Model -> TabType -> String
@@ -199,15 +222,14 @@ actualDeathChart model =
 
 infoView : Model -> Html Msg
 infoView model =
-    div []
-        [ div [ class "column is-full" ]
+    div [ class "container" ][
+    div [ class "columns is-multiline is-centered is-vcentered" ]
+        [ div [ class "column is-two-thirds" ]
             [ div [ class "box" ]
                 [ h1 [ class "title is-1" ] [ text "Welcome to GoT Deadpool" ]
-                , p [] [ text "Winter is coming... will they survive it. Predict the fate of all the major characters for the final season." ]
-                , br [] []
                 ]
             ]
-        , div [ class "column is-full" ]
+        , div [ class "column is-two-thirds" ]
             [ div [ class "box" ]
                 [ h1 [ class "title" ]
                     [ text "How To Play" ]
@@ -237,7 +259,7 @@ infoView model =
                     ]
                 ]
             ]
-        , div [ class "column is-full" ]
+        , div [ class "column is-two-thirds" ]
             [ div [ class "box" ]
                 [ h1 [ class "title" ]
                     [ text "The Rules" ]
@@ -259,7 +281,7 @@ infoView model =
                     ]
                 ]
             ]
-        , div [ class "column is-full" ]
+        , div [ class "column is-two-thirds" ]
             [ div [ class "box" ]
                 [ h1 [ class "title" ]
                     [ text "Author" ]
@@ -271,7 +293,7 @@ infoView model =
                         [ text "Written in Elm, using Firestore database to store predictions and cloud functions to compute scores."
                         ]
                     , br [] []
-                    , a [ class "button is-medium is-link", href "https://github.com/ThunderboltVRS/got-deadpool" ]
+                    , a [ class "button is-medium is-link is-outlined", href "https://github.com/ThunderboltVRS/got-deadpool" ]
                         [ span [ class "icon" ]
                             [ i [ class "fab fa-github" ]
                                 []
@@ -285,8 +307,25 @@ infoView model =
                     ]
                 ]
             ]
+            ,div [ class "column is-two-thirds" ]
+            [ div [ class "box" ]
+                [ h1 [ class "title" ]
+                    [ text "Log Out" ]
+                , p []
+                    [ a [ class "button is-medium is-link is-outlined", onClick (LogOut model.uid) ]
+                        [ span [ class "icon" ]
+                            [ i [ class "fas fa-sign-out-alt" ]
+                                []
+                            ]
+                        , span []
+                            [ text "LogOut" ]
+                        ]
+                    , br [] []
+                    ]
+                ]
+            ]
         ]
-
+    ]
 
 characterCard : Model -> Character -> Prediction -> Html Msg
 characterCard model character prediction =

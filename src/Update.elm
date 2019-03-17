@@ -2,7 +2,7 @@ module Update exposing (update)
 
 import Date
 import Maybe.Extra exposing (..)
-import Ports exposing (encodeUserData, saveUserData)
+import Ports exposing (encodeUserData, saveUserData, logOut)
 import Types exposing (..)
 import Util exposing (..)
 
@@ -25,7 +25,15 @@ update msg model =
             ( updatedModel, saveUserData (encodeUserData model.uid model.displayName updatedModel.predictions) )
 
         LoadCharacters characters ->
-            ( { model | characters = characters, predictions = if List.isEmpty model.predictions then defaultPredictions characters else model.predictions }
+            ( { model
+                | characters = characters
+                , predictions =
+                    if List.isEmpty model.predictions then
+                        defaultPredictions characters
+
+                    else
+                        model.predictions
+              }
                 |> calculateScores
             , Cmd.none
             )
@@ -36,7 +44,7 @@ update msg model =
             )
 
         LoadUserScores scores ->
-            ( { model | userScores = List.reverse (List.sortBy .score scores) } , Cmd.none )
+            ( { model | userScores = List.reverse (List.sortBy .score scores) }, Cmd.none )
 
         TabSelected tab ->
             ( { model | selectedTab = tab }
@@ -45,6 +53,12 @@ update msg model =
 
         Error str ->
             ( model, Cmd.none )
+
+        SearchUsers str ->
+            ( { model | userSearchText = str }, Cmd.none )
+
+        LogOut str ->
+            ( model, logOut str )
 
 
 updateEpisodePredictions : Model -> Character -> Episode -> Model
