@@ -2,7 +2,7 @@ module Update exposing (update)
 
 import Date
 import Maybe.Extra exposing (..)
-import Ports exposing (encodeUserData, saveUserData, logOut)
+import Ports exposing (encodeUserData, logOut, requestOtherUserData, saveUserData)
 import Types exposing (..)
 import Util exposing (..)
 
@@ -59,6 +59,15 @@ update msg model =
 
         LogOut str ->
             ( model, logOut str )
+
+        RequestOtherUserData str ->
+            ( model, requestOtherUserData str )
+
+        LoadOtherUserData userData ->
+            ( { model | otherUserData = Just userData }, Cmd.none )
+
+        ClearOtherUserData ->
+            ( { model | otherUserData = Nothing }, Cmd.none )
 
 
 updateEpisodePredictions : Model -> Character -> Episode -> Model

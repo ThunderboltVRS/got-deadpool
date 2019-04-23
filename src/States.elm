@@ -22,10 +22,11 @@ initialModel flags =
     , selectedTab = TabInfo
     , userScores = []
     , userSearchText = ""
+    , otherUserData = Nothing
     }
 
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
-        [ loadCharacters decodeCharactersAndCreateMsg, loadUserData decodeUserDataAndCreateMsg, loadUserScores decodeUserScoresAndCreateMsg ]
+        [ loadCharacters decodeCharactersAndCreateMsg, loadUserData decodeUserDataAndCreateMsg, loadUserScores decodeUserScoresAndCreateMsg, loadOtherUserData decodeOtherUserDataAndCreateMsg  ]

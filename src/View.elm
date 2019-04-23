@@ -11,12 +11,11 @@ import Types exposing (..)
 import Util exposing (..)
 
 
-
 view : Model -> Html Msg
 view model =
     div
         [ style "height" "100%" ]
-        [ div[class "navbar is-fixed-top"][tabs model]
+        [ div [ class "navbar is-fixed-top" ] [ tabs model ]
         , tabContent model
         ]
 
@@ -33,7 +32,7 @@ tabContent model =
                 statsView model
 
             TabInfo ->
-                 infoView model
+                infoView model
         ]
 
 
@@ -86,6 +85,7 @@ statsView model =
             [ predictionDeathChart model
             , actualDeathChart model
             ]
+        , modal model
         ]
 
 
@@ -102,6 +102,7 @@ userSearch model =
             ]
         ]
 
+
 userScoresTable : Model -> Html Msg
 userScoresTable model =
     table [ class "table is-striped is-narrow is-hoverable is-fullwidth" ]
@@ -109,8 +110,10 @@ userScoresTable model =
             [ tr []
                 [ th [ style "width" "50%" ]
                     [ text "Name" ]
-                , th [ style "width" "50%" ]
+                , th [ style "width" "25%" ]
                     [ text "Score" ]
+                , th [ style "width" "25%" ]
+                    [ text "Predictions" ]
                 ]
             ]
         , tbody []
@@ -119,17 +122,55 @@ userScoresTable model =
                     (\userScore ->
                         tr [ classList [ ( "is-selected", model.uid == userScore.uid ) ] ]
                             [ td [ style "width" "50%" ] [ Html.text userScore.displayName ]
-                            , td [ style "width" "50%" ] [ Html.text (String.fromInt userScore.score) ]
+                            , td [ style "width" "25%" ] [ Html.text (String.fromInt userScore.score) ]
+                            , td [ style "width" "25%" ]
+                                [ if not (userScore.uid == model.uid) then
+                                    a [ class "button is-link is-outlined", onClick (RequestOtherUserData userScore.uid) ]
+                                        [ span []
+                                            [ text "View" ]
+                                        , span [ class "icon" ]
+                                            [ i [ class "fas fa-caret-square-right" ]
+                                                []
+                                            ]
+                                        ]
+
+                                  else
+                                    div [] []
+                                ]
                             ]
                     )
             )
         ]
 
 
+modal : Model -> Html Msg
+modal model =
+    case model.otherUserData of
+        Just userData ->
+            div
+                [ onClick ClearOtherUserData
+                , class "modal is-active"
+                ]
+                [ div [ class "modal-background" ]
+                    []
+                , div [ class "modal-content modal-container" ]
+                    [ h1 [ class "title is-1 has-text-centered" ] [ text userData.displayName ]
+                    , div [ class "container " ]
+                        [ characterRow model userData.predictions model.characters ]
+                    ]
+                , button [ attribute "aria-label" "close", class "modal-close is-large" ]
+                    []
+                ]
+
+        Nothing ->
+            div [ class "modal" ] []
+
+
 filteredUsers : Model -> List UserScore
 filteredUsers model =
-    if (String.isEmpty model.userSearchText) then
+    if String.isEmpty model.userSearchText then
         model.userScores
+
     else
         List.filter (\u -> match model.userSearchText u.displayName) model.userScores
 
@@ -146,25 +187,21 @@ tabClass model tabType =
 characterTab : Model -> Html Msg
 characterTab model =
     div [ class "container" ]
-        -- (List.Extra.greedyGroupsOf 3 model.characters
-        --     |> List.map (characterRow model)
-        -- )
-        [ characterRow model model.characters ]
+        [ characterRow model model.predictions model.characters ]
 
 
-characterRow : Model -> List Character -> Html Msg
-characterRow model characterSubList =
+characterRow : Model -> List Prediction -> List Character -> Html Msg
+characterRow model predictions characterSubList =
     div
-        --[ class "columns is-centered is-vcentered" ]
         [ class "columns is-centered is-vcentered is-multiline" ]
-        (List.map (characterDetails model) characterSubList)
+        (List.map (characterDetails model predictions) characterSubList)
 
 
-characterDetails : Model -> Character -> Html Msg
-characterDetails model character =
+characterDetails : Model -> List Prediction -> Character -> Html Msg
+characterDetails model predictions character =
     let
         mPrediction =
-            findPrediction model character
+            findPrediction predictions character
     in
     case mPrediction of
         Just prediction ->
@@ -222,110 +259,114 @@ actualDeathChart model =
 
 infoView : Model -> Html Msg
 infoView model =
-    div [ class "container" ][
-    div [ class "columns is-multiline is-centered is-vcentered" ]
-        [ div [ class "column is-two-thirds" ]
-            [ div [ class "box" ]
-                [ h1 [ class "title is-1" ] [ text "Welcome to GoT Deadpool" ]
+    div [ class "container" ]
+        [ div [ class "columns is-multiline is-centered is-vcentered" ]
+            [ div [ class "column is-two-thirds" ]
+                [ div [ class "box" ]
+                    [ h1 [ class "title is-1" ] [ text "Winter Has Come..." ]
+                    , p []
+                        [ text "You can now view other people's predictions."
+                        ]
+                    ]
                 ]
-            ]
-        , div [ class "column is-two-thirds" ]
-            [ div [ class "box" ]
-                [ h1 [ class "title" ]
-                    [ text "How To Play" ]
-                , p []
-                    [ ol []
-                        [ li []
-                            [ text "Use the predictions tab to make your predictions per character. Changes are immediately saved." ]
-                        , li []
-                            [ text "At some point close to the first episode, you will no longer be able to make predictions." ]
-                        , li []
-                            [ text "On a Monday after each episode is aired, the status of the character will updated." ]
-                        , li []
-                            [ text "Scores will be calculated:"
-                            , ul []
-                                [ li []
-                                    [ text "A point for correctly guessing if they live or die."
-                                    ]
-                                , li []
-                                    [ text "A bonus point for guessing the correct episode of death."
+            , div [ class "column is-two-thirds" ]
+                [ div [ class "box" ]
+                    [ h1 [ class "title" ]
+                        [ text "How To Play" ]
+                    , p []
+                        [ ol []
+                            [ li []
+                                [ text "Use the predictions tab to make your predictions per character. Changes are immediately saved." ]
+                            , li []
+                                [ text "At some point close to the first episode, you will no longer be able to make predictions." ]
+                            , li []
+                                [ text "On a Monday after each episode is aired, the status of the character will updated." ]
+                            , li []
+                                [ text "Scores will be calculated:"
+                                , ul []
+                                    [ li []
+                                        [ text "A point for correctly guessing if they live or die."
+                                        ]
+                                    , li []
+                                        [ text "A bonus point for guessing the correct episode of death."
+                                        ]
                                     ]
                                 ]
-                            ]
-                        , li []
-                            [ text "Everyone's score is displayed in a ranked table on the scores tab."
+                            , li []
+                                [ text "Everyone's score is displayed in a ranked table on the scores tab."
+                                ]
                             ]
                         ]
                     ]
                 ]
-            ]
-        , div [ class "column is-two-thirds" ]
-            [ div [ class "box" ]
-                [ h1 [ class "title" ]
-                    [ text "The Rules" ]
-                , p []
-                    [ ol []
-                        [ li []
-                            [ text "Resurections will not revert a character's status of 'Dies'" ]
-                        , li []
-                            [ text "Conversion to a White Walker will count as a death" ]
-                        , li []
-                            [ text "Any presumed death offscreen will be counted as a death" ]
-                        , li []
-                            [ text "A death between episodes will count as a death on the latter episode" ]
-                        , li []
-                            [ text "The Night King's death is the point which he ceases to be a Walker" ]
-                        , li []
-                            [ text "My word is final." ]
-                        ]
-                    ]
-                ]
-            ]
-        , div [ class "column is-two-thirds" ]
-            [ div [ class "box" ]
-                [ h1 [ class "title" ]
-                    [ text "Author" ]
-                , p []
-                    [ p []
-                        [ text "Created by Gary Stanton."
-                        ]
+            , div [ class "column is-two-thirds" ]
+                [ div [ class "box" ]
+                    [ h1 [ class "title" ]
+                        [ text "The Rules" ]
                     , p []
-                        [ text "Written in Elm, using Firestore database to store predictions and cloud functions to compute scores."
-                        ]
-                    , br [] []
-                    , a [ class "button is-medium is-link is-outlined", href "https://github.com/ThunderboltVRS/got-deadpool" ]
-                        [ span [ class "icon" ]
-                            [ i [ class "fab fa-github" ]
-                                []
+                        [ ol []
+                            [ li []
+                                [ text "Resurections will not revert a character's status of 'Dies'" ]
+                            , li []
+                                [ text "Conversion to a White Walker will count as a death" ]
+                            , li []
+                                [ text "Any presumed death offscreen will be counted as a death" ]
+                            , li []
+                                [ text "A death between episodes will count as a death on the latter episode" ]
+                            , li []
+                                [ text "The Night King's death is the point which he ceases to be a Walker" ]
+                            , li []
+                                [ text "My word is final." ]
                             ]
-                        , span []
-                            [ text "GitHub" ]
                         ]
-                    , br [] []
-                    , br [] []
-                    , div [] [ text "Background image by by mauRÍCIO santos: ", a [ href "https://unsplash.com/photos/N1gFsYf9AI0" ] [ text "link" ] ]
                     ]
                 ]
-            ]
-            ,div [ class "column is-two-thirds" ]
-            [ div [ class "box" ]
-                [ h1 [ class "title" ]
-                    [ text "Log Out" ]
-                , p []
-                    [ a [ class "button is-medium is-link is-outlined", onClick (LogOut model.uid) ]
-                        [ span [ class "icon" ]
-                            [ i [ class "fas fa-sign-out-alt" ]
-                                []
+            , div [ class "column is-two-thirds" ]
+                [ div [ class "box" ]
+                    [ h1 [ class "title" ]
+                        [ text "Author" ]
+                    , p []
+                        [ p []
+                            [ text "Created by Gary Stanton."
                             ]
-                        , span []
-                            [ text "LogOut" ]
+                        , p []
+                            [ text "Written in Elm, using Firestore database to store predictions and cloud functions to compute scores."
+                            ]
+                        , br [] []
+                        , a [ class "button is-medium is-link is-outlined", href "https://github.com/ThunderboltVRS/got-deadpool" ]
+                            [ span [ class "icon" ]
+                                [ i [ class "fab fa-github" ]
+                                    []
+                                ]
+                            , span []
+                                [ text "GitHub" ]
+                            ]
+                        , br [] []
+                        , br [] []
+                        , div [] [ text "Background image by by mauRÍCIO santos: ", a [ href "https://unsplash.com/photos/N1gFsYf9AI0" ] [ text "link" ] ]
                         ]
-                    , br [] []
+                    ]
+                ]
+            , div [ class "column is-two-thirds" ]
+                [ div [ class "box" ]
+                    [ h1 [ class "title" ]
+                        [ text "Log Out" ]
+                    , p []
+                        [ a [ class "button is-medium is-link is-outlined", onClick (LogOut model.uid) ]
+                            [ span [ class "icon" ]
+                                [ i [ class "fas fa-sign-out-alt" ]
+                                    []
+                                ]
+                            , span []
+                                [ text "LogOut" ]
+                            ]
+                        , br [] []
+                        ]
                     ]
                 ]
             ]
         ]
-    ]
+
 
 characterCard : Model -> Character -> Prediction -> Html Msg
 characterCard model character prediction =
@@ -455,9 +496,9 @@ episodePredictionMatches episode prediction =
     episode == prediction.episode
 
 
-findPrediction : Model -> Character -> Maybe Prediction
-findPrediction model character =
-    List.filter (\p -> p.characterId == character.id) model.predictions
+findPrediction : List Prediction -> Character -> Maybe Prediction
+findPrediction predictions character =
+    List.filter (\p -> p.characterId == character.id) predictions
         |> List.head
 
 

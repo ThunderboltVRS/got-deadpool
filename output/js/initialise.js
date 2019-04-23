@@ -24,6 +24,12 @@ function subscribeToLogOut() {
   });
 }
 
+function subscribeToLoadOtherUserData() {
+  app.ports.requestOtherUserData.subscribe(function (otherUserUid) {
+    getSpecificUserData(otherUserUid);
+  });
+}
+
 function subscribeToSaveUserData() {
   app.ports.saveUserData.subscribe(function (data) {
     saveUserData(JSON.stringify(data));
@@ -90,6 +96,20 @@ function getUserData() {
   });
 }
 
+function getSpecificUserData(specificUid) {
+  var docRef = db.collection("userData").doc(specificUid);
+  docRef.get().then(function (doc) {
+    if (doc.exists) {
+      app.ports.loadOtherUserData.send(doc.data());
+    } else {
+      // doc.data() will be undefined in this case
+      console.log("No such document!");
+    }
+  }).catch(function (error) {
+    console.log("Error getting document:", error);
+  });
+}
+
 function getUserScores() {
   var docRef = db.collection("userScores").doc("menijTKeF99gb0mEjkmW");
   docRef.get().then(function (doc) {
@@ -138,6 +158,7 @@ initApp = function () {
 
         subscribeToLoadCharacters();
         subscribeToLoadUserScores();
+        subscribeToLoadOtherUserData();
 
         
       });

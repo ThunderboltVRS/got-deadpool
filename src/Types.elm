@@ -15,6 +15,9 @@ type Msg
     | Error Decode.Error
     | SearchUsers String
     | LogOut String
+    | RequestOtherUserData String
+    | LoadOtherUserData UserData
+    | ClearOtherUserData
 
 
 type AliveStatus
@@ -49,6 +52,7 @@ type alias Model =
     , selectedTab : TabType
     , userScores : List UserScore
     , userSearchText : String
+    , otherUserData : Maybe UserData
     }
 
 
@@ -91,6 +95,7 @@ type alias UserData =
     , predictions : List Prediction
     , displayName : String
     }
+
 
 type alias UserScore =
     { uid : String

@@ -1,4 +1,4 @@
-port module Ports exposing (aliveDecoder, aliveStatusEncoder, characterDecoder, decodeCharacters, decodeCharactersAndCreateMsg, decodeUserData, decodeUserDataAndCreateMsg, decodeUserScores, decodeUserScoresAndCreateMsg, encodePrediction, encodeUserData, episdoeDecoder, episodeEncoder, loadCharacters, loadUserData, loadUserScores, logOut, predictionDecoder, saveUserData, userDataEncoder, userScoreDecoder)
+port module Ports exposing (aliveDecoder, aliveStatusEncoder, characterDecoder, decodeCharacters, decodeCharactersAndCreateMsg, decodeOtherUserDataAndCreateMsg, decodeUserData, decodeUserDataAndCreateMsg, decodeUserScores, decodeUserScoresAndCreateMsg, encodePrediction, encodeUserData, episdoeDecoder, episodeEncoder, loadCharacters, loadOtherUserData, loadUserData, loadUserScores, logOut, predictionDecoder, requestOtherUserData, saveUserData, userDataEncoder, userScoreDecoder)
 
 import Json.Decode as Decode exposing (Decoder)
 import Json.Decode.Pipeline exposing (optional, required)
@@ -15,10 +15,16 @@ port loadUserData : (Decode.Value -> msg) -> Sub msg
 port loadUserScores : (Decode.Value -> msg) -> Sub msg
 
 
+port loadOtherUserData : (Decode.Value -> msg) -> Sub msg
+
+
 port saveUserData : Encode.Value -> Cmd a
 
 
 port logOut : String -> Cmd a
+
+
+port requestOtherUserData : String -> Cmd a
 
 
 
@@ -99,6 +105,20 @@ decodeUserDataAndCreateMsg jsonValue =
     case decodeUserData jsonValue of
         Ok userData ->
             LoadUserData userData
+
+        Err errorMessage ->
+            -- let
+            --     _ =
+            --         Debug.log "Error in mapWorkerUpdated:" errorMessage
+            -- in
+            Error errorMessage
+
+
+decodeOtherUserDataAndCreateMsg : Decode.Value -> Msg
+decodeOtherUserDataAndCreateMsg jsonValue =
+    case decodeUserData jsonValue of
+        Ok userData ->
+            LoadOtherUserData userData
 
         Err errorMessage ->
             -- let

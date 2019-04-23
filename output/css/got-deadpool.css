@@ -3,7 +3,6 @@
 }
 
 .box {
-    /* background-color: rgb(256,256,256,0.9); */
     background-color: white;
 }
 
@@ -19,6 +18,14 @@
     height: -webkit-fill-available;
 }
 
+.modal-container{
+    background-color: lightgray;
+    padding: 10px;
+}
+.modal-content{
+    width: fit-content;
+    overflow-x: hidden;
+}
 @media screen and (min-width: 769px) {
     html {
         background: url(../img/background-min.jpg) no-repeat center center fixed !important;
@@ -33,6 +40,10 @@
     .gotBody .navbar{
         display: inherit;
     }
+    .character-pic {
+        width: 9rem;
+        height: 11rem;
+    }
 }
 
 html {
@@ -42,10 +53,6 @@ html {
 .tabs {
     background: lightgray;
     border-color: lightgray;
-}
-
-.stat-row {
-    /* padding-top: 2rem; */
 }
 
 .gotBody .tabs.is-toggle li.is-active a {
@@ -69,26 +76,13 @@ html {
     background-color: #209cee;
 }
 
-.gotBody .media-content {
-    /* min-width: 14rem; */
-}
-
-.gotBody .card {
-    /* min-height: 14rem; */
-}
-
-.gotBody .card-content {
-    /* overscroll-behavior-x: auto;
-    overflow: auto; */
-}
-
 .sign-in {
     padding-top: 3rem;
 }
 
 .character-pic {
-    width: 9rem;
-    height: 11rem;
+    width: 7rem;
+    height: 10rem;
 }
 
 ol{
