@@ -262,10 +262,13 @@ infoView model =
     div [ class "container" ]
         [ div [ class "columns is-multiline is-centered is-vcentered" ]
             [ div [ class "column is-two-thirds" ]
-                [ div [ class "box" ]
+                [ div [ class "box has-text-centered" ]
                     [ h1 [ class "title is-1" ] [ text "Winter Has Come..." ]
                     , p []
                         [ text "You can now view other people's predictions."
+                        ]
+                        , p []
+                        [ text "Scores will be updated on a Monday night after watching the episode if I can."
                         ]
                     ]
                 ]
@@ -371,7 +374,7 @@ infoView model =
 characterCard : Model -> Character -> Prediction -> Html Msg
 characterCard model character prediction =
     div [ class "column is-full-mobile is-full-tablet is-half-desktop is-half-widescreen is-one-third-fullhd" ]
-        [ div [ class "card" ]
+        [ div [ class "card", style "min-height" "250px" ]
             [ div [ class "card-content" ]
                 [ div [ class "media" ]
                     [ figure [ class "media-left" ]
@@ -403,6 +406,7 @@ characterCard model character prediction =
                     --         ]
                     --     ]
                     ]
+                    , p [ class "title is-6" ] [text character.deathNotes]
                 ]
             ]
         ]
@@ -424,7 +428,7 @@ characterIconClass character =
 
 aliveStatusSelection : Model -> Character -> Prediction -> Html Msg
 aliveStatusSelection model character prediction =
-    div [ class "select is-medium" ]
+    div [ class (aliveStatusClass character prediction) ]
         [ select
             [ on "change" (Json.map (UpdateStatePrediction character) Html.Events.targetValue)
             , disabled (aliveDropDownDisabled character prediction)
@@ -433,6 +437,18 @@ aliveStatusSelection model character prediction =
             , aliveStatusOption Dies prediction
             ]
         ]
+
+
+aliveStatusClass : Character -> Prediction -> String
+aliveStatusClass character prediction =
+    if character.locked && character.confirmed then
+        if prediction.aliveStatus == character.aliveStatus then
+            "select is-medium is-success"
+        else
+            "select is-medium is-danger"
+
+    else
+        "select is-medium"
 
 
 aliveStatusOption : AliveStatus -> Prediction -> Html Msg
@@ -451,13 +467,24 @@ aliveDropDownDisabled character prediction =
 
 episodeSelection : Model -> Character -> Prediction -> Html Msg
 episodeSelection model character prediction =
-    div [ class "select is-medium" ]
+    div [ class (episodeSelectionClass character prediction) ]
         [ select
             [ on "change" (Json.map (UpdateEpisodePrediction character) Html.Events.targetValue)
             , disabled (episodeDropDownDisabled character prediction)
             ]
             (episodeSelectionOptions model character prediction)
         ]
+
+episodeSelectionClass : Character -> Prediction -> String
+episodeSelectionClass character prediction =
+    if character.locked && character.confirmed then
+        if prediction.episode == character.episode then
+            "select is-medium is-success"
+        else
+            "select is-medium is-danger"
+
+    else
+        "select is-medium"
 
 
 episodeSelectionOptions : Model -> Character -> Prediction -> List (Html Msg)
